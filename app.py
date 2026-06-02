@@ -342,7 +342,26 @@ def api_execute_script(script_name: str):
     except Exception as exc:
         save_execution_log(script_name, params, None, "falha", "", str(exc))
         return jsonify({"script": script_name, "params": params, "status": "falha", "stderr": str(exc)}), 500
+@app.post("/admin/scripts/<int:script_id>/execute")
+def execute_script_web(script_id):
 
+    conn = get_conn()
+    script = conn.execute(
+        "SELECT * FROM scripts WHERE id = ?",
+        (script_id,)
+    ).fetchone()
+    conn.close()
+
+    if not script:
+        flash("Script não encontrado.", "danger")
+        return redirect(url_for("scripts_admin"))
+
+    return redirect(
+        url_for(
+            "api_execute_script",
+            script_name=script["name"]
+        )
+    )
 
 if __name__ == "__main__":
     init_db()
