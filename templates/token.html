@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Token da API</h1>
+<div class="card">
+  <div class="card-body">
+    <p>Token atual:</p>
+    <code>{{ token }}</code>
+    <hr>
+    <form method="post">
+      <label class="form-label">Novo token</label>
+      <input class="form-control mb-3" name="token" minlength="8" required>
+      <button class="btn btn-dark">Atualizar token</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

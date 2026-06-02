@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: isyone-secure-api
+    env: docker
+    plan: free
+    branch: main
+    autoDeploy: true
+    envVars:
+      - key: ISY_INITIAL_TOKEN
+        sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: ISY_DATA_DIR
+        value: /app/data
+      - key: ISY_SCRIPTS_DIR
+        value: /app/scripts

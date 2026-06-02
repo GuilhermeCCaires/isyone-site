@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Logs e Auditoria</h1>
+<table class="table table-bordered table-sm align-middle">
+  <thead><tr><th>Horário</th><th>Script</th><th>Parâmetros</th><th>Status</th><th>Retorno</th><th>stdout</th><th>stderr</th></tr></thead>
+  <tbody>
+  {% for log in logs %}
+    <tr>
+      <td>{{ log.executed_at }}</td>
+      <td>{{ log.script_name }}</td>
+      <td><code>{{ log.params_used }}</code></td>
+      <td>{% if log.status == 'sucesso' %}<span class="badge bg-success">sucesso</span>{% else %}<span class="badge bg-danger">falha</span>{% endif %}</td>
+      <td>{{ log.return_code }}</td>
+      <td><pre>{{ log.stdout }}</pre></td>
+      <td><pre>{{ log.stderr }}</pre></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

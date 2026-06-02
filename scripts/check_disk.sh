@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
+#!/bin/sh
+echo "Uso de disco:"
 df -h

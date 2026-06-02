@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Cadastro de Scripts Bash</h1>
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-md-3"><label class="form-label">Script</label><input class="form-control" name="name" placeholder="check_docker" required></div>
+      <div class="col-md-3"><label class="form-label">Arquivo .sh</label><input class="form-control" name="file_name" placeholder="check_docker.sh" required></div>
+      <div class="col-md-3"><label class="form-label">Parâmetros de envio</label><input class="form-control" name="params_schema" value="{}"></div>
+      <div class="col-md-3"><label class="form-label">Descrição curta</label><input class="form-control" name="description" required></div>
+      <div class="col-md-2 form-check ms-2"><input class="form-check-input" type="checkbox" name="active" checked><label class="form-check-label">Ativo</label></div>
+      <div class="col-12"><button class="btn btn-dark">Cadastrar script</button></div>
+    </form>
+  </div>
+</div>
+<table class="table table-striped align-middle">
+  <thead><tr><th>Script</th><th>Arquivo</th><th>Parâmetros</th><th>Descrição</th><th>Status</th><th>Ações</th></tr></thead>
+  <tbody>
+  {% for script in scripts %}
+    <tr>
+      <td>{{ script.name }}</td>
+      <td><code>{{ script.file_name }}</code></td>
+      <td><code>{{ script.params_schema }}</code></td>
+      <td>{{ script.description }}</td>
+      <td>{% if script.active %}<span class="badge bg-success">Ativo</span>{% else %}<span class="badge bg-secondary">Inativo</span>{% endif %}</td>
+      <td><form method="post" action="/admin/scripts/{{ script.id }}/toggle"><button class="btn btn-sm btn-outline-dark">Alterar status</button></form></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

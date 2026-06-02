@@ -1,12 +1,13 @@
 services:
-  isyone-site:
+  isyone-api:
     build: .
-    container_name: isyone-site
+    container_name: isyone-secure-api
     ports:
       - "5000:5000"
     environment:
-      ISYONE_DB_PATH: /app/data/isyone.db
-      ISYONE_SCRIPTS_DIR: /app/scripts
+      - ISY_INITIAL_TOKEN=isyone-dev-token
+      - ISY_DATA_DIR=/app/data
+      - ISY_SCRIPTS_DIR=/app/scripts
     volumes:
       - ./data:/app/data
       - ./scripts:/app/scripts:ro

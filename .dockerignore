@@ -1,9 +1,7 @@
-venv/
-__pycache__/
+venv
+__pycache__
 *.pyc
-*.pyo
+.git
+.gitignore
 *.db
-.env
-.git/
-.vscode/
-data/
+data/*
