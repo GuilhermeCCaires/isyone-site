@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="mb-0">Dashboard</h1>
+    <p class="text-muted">Painel de manutenção remota dos servidores dos clientes.</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('new_server') }}">Cadastrar servidor</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6>Servidores</h6><h2>{{ total_servers }}</h2></div></div></div>
+  <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6>Tarefas</h6><h2>{{ total_tasks }}</h2></div></div></div>
+  <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6>Sucessos</h6><h2 class="text-success">{{ total_success }}</h2></div></div></div>
+  <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6>Falhas</h6><h2 class="text-danger">{{ total_errors }}</h2></div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header fw-bold">Últimos servidores</div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Nome</th><th>Host</th><th>Usuário</th></tr></thead>
+          <tbody>
+          {% for s in servers %}
+            <tr><td>{{ s.name }}</td><td>{{ s.host }}:{{ s.port }}</td><td>{{ s.username }}</td></tr>
+          {% else %}
+            <tr><td colspan="3" class="text-muted">Nenhum servidor cadastrado.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header fw-bold">Últimas execuções</div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Servidor</th><th>Tarefa</th><th>Status</th></tr></thead>
+          <tbody>
+          {% for h in latest %}
+            <tr>
+              <td>{{ h.server_name }}</td>
+              <td>{{ tasks[h.task].label if h.task in tasks else h.task }}</td>
+              <td>{% if h.success %}<span class="badge text-bg-success">Sucesso</span>{% else %}<span class="badge text-bg-danger">Falha</span>{% endif %}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="3" class="text-muted">Nenhuma tarefa executada.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

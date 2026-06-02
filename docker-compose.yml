@@ -1,0 +1,13 @@
+services:
+  isyone-site:
+    build: .
+    container_name: isyone-site
+    ports:
+      - "5000:5000"
+    environment:
+      ISYONE_DB_PATH: /app/data/isyone.db
+      ISYONE_SCRIPTS_DIR: /app/scripts
+    volumes:
+      - ./data:/app/data
+      - ./scripts:/app/scripts:ro
+    restart: unless-stopped

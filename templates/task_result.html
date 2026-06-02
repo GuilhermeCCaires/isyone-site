@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Resultado da tarefa</h1>
+<div class="card shadow-sm mb-3"><div class="card-body">
+  <p><strong>Servidor:</strong> {{ server.name }} - {{ server.host }}</p>
+  <p><strong>Tarefa:</strong> {{ task.label }}</p>
+  <p><strong>Status:</strong> {% if success %}<span class="badge text-bg-success">Sucesso</span>{% else %}<span class="badge text-bg-danger">Falha</span>{% endif %}</p>
+</div></div>
+{% if output %}<h5>Saída</h5><pre class="terminal-output">{{ output }}</pre>{% endif %}
+{% if error %}<h5>Erro</h5><pre class="terminal-output error-output">{{ error }}</pre>{% endif %}
+<a href="{{ url_for('tasks_page') }}" class="btn btn-primary">Executar outra tarefa</a>
+<a href="{{ url_for('history') }}" class="btn btn-secondary">Ver histórico</a>
+{% endblock %}

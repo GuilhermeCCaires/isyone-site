@@ -1,0 +1,13 @@
+body { background: #f5f6f8; }
+.card { border: 0; border-radius: 14px; }
+.navbar-brand { letter-spacing: .2px; }
+.terminal-output {
+  background: #111827;
+  color: #e5e7eb;
+  padding: 16px;
+  border-radius: 12px;
+  white-space: pre-wrap;
+  max-height: 420px;
+  overflow: auto;
+}
+.error-output { color: #fecaca; }

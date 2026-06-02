@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Executar tarefas</h1>
+<p class="text-muted">Escolha um servidor e uma tarefa de manutenção.</p>
+<div class="card shadow-sm"><div class="card-body">
+<form method="post" action="{{ url_for('run_task') }}">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Servidor</label>
+      <select name="server_id" class="form-select" required>
+        <option value="">Selecione...</option>
+        {% for s in servers %}<option value="{{ s.id }}">{{ s.name }} - {{ s.host }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Tarefa</label>
+      <select name="task" class="form-select" required>
+        <option value="">Selecione...</option>
+        {% for key, item in tasks.items() %}<option value="{{ key }}">{{ item.label }}</option>{% endfor %}
+      </select>
+    </div>
+  </div>
+  <button class="btn btn-primary mt-4">Executar agora</button>
+</form>
+</div></div>
+{% endblock %}

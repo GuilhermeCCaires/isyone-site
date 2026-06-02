@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Cadastrar servidor</h1>
+<p class="text-muted">Informe os dados de acesso SSH do servidor Linux/Ubuntu do cliente.</p>
+<div class="card shadow-sm"><div class="card-body">
+<form method="post">
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Nome do cliente/servidor</label><input name="name" class="form-control" required></div>
+    <div class="col-md-4"><label class="form-label">Host/IP</label><input name="host" class="form-control" required></div>
+    <div class="col-md-2"><label class="form-label">Porta SSH</label><input name="port" class="form-control" value="22" type="number"></div>
+    <div class="col-md-6"><label class="form-label">Usuário SSH</label><input name="username" class="form-control" required></div>
+    <div class="col-md-6"><label class="form-label">Senha SSH</label><input name="password" class="form-control" type="password"></div>
+    <div class="col-12"><label class="form-label">Caminho da chave privada SSH</label><input name="private_key_path" class="form-control" placeholder="Ex: C:\\Users\\guilh\\.ssh\\id_rsa"></div>
+  </div>
+  <div class="mt-4"><button class="btn btn-success">Salvar</button><a href="{{ url_for('servers') }}" class="btn btn-secondary">Cancelar</a></div>
+</form>
+</div></div>
+{% endblock %}
