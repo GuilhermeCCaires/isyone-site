@@ -23,7 +23,19 @@
       <td><code>{{ script.params_schema }}</code></td>
       <td>{{ script.description }}</td>
       <td>{% if script.active %}<span class="badge bg-success">Ativo</span>{% else %}<span class="badge bg-secondary">Inativo</span>{% endif %}</td>
-      <td><form method="post" action="/admin/scripts/{{ script.id }}/toggle"><button class="btn btn-sm btn-outline-dark">Alterar status</button></form></td>
+     <td>
+    <form method="POST" action="/execute/{{ script.id }}" style="display:inline;">
+        <button type="submit" class="btn btn-success">
+            Executar
+        </button>
+    </form>
+
+    <form method="POST" action="/toggle/{{ script.id }}" style="display:inline;">
+        <button type="submit" class="btn btn-warning">
+            Alterar status
+        </button>
+    </form>
+</td>
     </tr>
   {% endfor %}
   </tbody>
