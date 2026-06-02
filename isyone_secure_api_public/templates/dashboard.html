@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><h5>Scripts cadastrados</h5><p class="display-6">{{ total_scripts }}</p></div></div></div>
+  <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><h5>Scripts ativos</h5><p class="display-6">{{ active_scripts }}</p></div></div></div>
+  <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><h5>Execuções registradas</h5><p class="display-6">{{ total_logs }}</p></div></div></div>
+</div>
+<div class="card mb-4">
+  <div class="card-body">
+    <h5>Token atual para testes</h5>
+    <code>{{ token }}</code>
+    <p class="text-muted mt-2 mb-0">Em produção, não exiba o token na tela. Essa exibição é apenas para desenvolvimento.</p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <h5>Exemplo de chamada da API</h5>
+<pre><code>curl -X POST http://localhost:5000/api/scripts/hello/execute ^
+  -H "Content-Type: application/json" ^
+  -H "X-Isy-Token: {{ token }}" ^
+  -d "{\"params\": {\"name\": \"Isy.One\"}}"</code></pre>
+  </div>
+</div>
+{% endblock %}

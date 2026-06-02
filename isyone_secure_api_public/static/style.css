@@ -1,0 +1,4 @@
+body { background: #f5f6f8; }
+.card { border: 0; border-radius: 14px; }
+pre { white-space: pre-wrap; max-width: 420px; font-size: 12px; margin: 0; }
+code { color: #111; }
