@@ -291,60 +291,8 @@ def api_list_scripts():
     return jsonify([row_to_dict(row) for row in rows])
 
 
-@app.post("/api/scripts/<script_name>/execute")
-def api_execute_script(script_name: str):
-    auth_error = require_api_token()
-    if auth_error:
-        return auth_error
-
-    script = get_script_by_name(script_name)
-    if not script:
-        return jsonify({"error": "Script não encontrado"}), 404
-    if not script["active"]:
-        return jsonify({"error": "Script inativo"}), 403
-
-    payload = request.get_json(silent=True) or {}
-    params = normalize_params(payload)
-
-    try:
-        script_path = safe_script_path(script["file_name"])
-        if not script_path.exists():
-            raise FileNotFoundError(f"Arquivo não encontrado: {script_path.name}")
-
-        command = ["/bin/sh", str(script_path), *params]
-        completed = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=60,
-            cwd=str(SCRIPTS_DIR),
-            check=False,
-        )
-        status = "sucesso" if completed.returncode == 0 else "falha"
-        save_execution_log(
-            script_name=script_name,
-            params_used=params,
-            return_code=completed.returncode,
-            status=status,
-            stdout=completed.stdout,
-            stderr=completed.stderr,
-        )
-        return jsonify(
-            {
-                "script": script_name,
-                "params": params,
-                "status": status,
-                "return_code": completed.returncode,
-                "stdout": completed.stdout,
-                "stderr": completed.stderr,
-            }
-        ), 200 if completed.returncode == 0 else 500
-    except Exception as exc:
-        save_execution_log(script_name, params, None, "falha", "", str(exc))
-        return jsonify({"script": script_name, "params": params, "status": "falha", "stderr": str(exc)}), 500
 @app.post("/admin/scripts/<int:script_id>/execute")
-def execute_script_web(script_id):
-
+def execute_script_web(script_id: int):
     conn = get_conn()
     script = conn.execute(
         "SELECT * FROM scripts WHERE id = ?",
@@ -356,13 +304,65 @@ def execute_script_web(script_id):
         flash("Script não encontrado.", "danger")
         return redirect(url_for("scripts_admin"))
 
-    return redirect(
-        url_for(
-            "api_execute_script",
-            script_name=script["name"]
-        )
-    )
+    if not script["active"]:
+        flash("Script inativo. Ative o script antes de executar.", "warning")
+        return redirect(url_for("scripts_admin"))
 
+    try:
+        script_path = safe_script_path(script["file_name"])
+
+        if not script_path.exists():
+            raise FileNotFoundError(f"Arquivo não encontrado: {script_path.name}")
+
+        command = ["/bin/sh", str(script_path)]
+
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            cwd=str(SCRIPTS_DIR),
+            check=False,
+        )
+
+        status = "sucesso" if completed.returncode == 0 else "falha"
+
+        save_execution_log(
+            script_name=script["name"],
+            params_used=[],
+            return_code=completed.returncode,
+            status=status,
+            stdout=completed.stdout,
+            stderr=completed.stderr,
+        )
+
+        return render_template(
+            "resultado.html",
+            script=script,
+            status=status,
+            return_code=completed.returncode,
+            stdout=completed.stdout,
+            stderr=completed.stderr,
+        )
+
+    except Exception as exc:
+        save_execution_log(
+            script_name=script["name"],
+            params_used=[],
+            return_code=None,
+            status="falha",
+            stdout="",
+            stderr=str(exc),
+        )
+
+        return render_template(
+            "resultado.html",
+            script=script,
+            status="falha",
+            return_code=None,
+            stdout="",
+            stderr=str(exc),
+        )
 if __name__ == "__main__":
     init_db()
     seed_scripts()
