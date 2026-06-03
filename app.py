@@ -85,6 +85,7 @@ def seed_scripts():
     conn = get_conn()
     cur = conn.cursor()
     defaults = [
+        ("teste", "teste.sh", "{}", "Script de teste", 1),
         ("check_disk", "check_disk.sh", "{}", "Verifica o uso de disco do servidor", 1),
         ("check_memory", "check_memory.sh", "{}", "Verifica o uso de memória do servidor", 1),
         ("hello", "hello.sh", '{"name":"opcional"}', "Script de teste parametrizável", 1),

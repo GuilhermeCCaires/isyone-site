@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Resultado da execução</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <p><strong>Script:</strong> {{ script.name }}</p>
+    <p><strong>Status:</strong>
+      {% if status == 'sucesso' %}
+        <span class="badge bg-success">sucesso</span>
+      {% else %}
+        <span class="badge bg-danger">falha</span>
+      {% endif %}
+    </p>
+    <p><strong>Código de retorno:</strong> {{ return_code }}</p>
+  </div>
+</div>
+
+<h5>Saída</h5>
+<pre class="terminal-output">{{ stdout }}</pre>
+
+{% if stderr %}
+<h5>Erro</h5>
+<pre class="terminal-output error-output">{{ stderr }}</pre>
+{% endif %}
+
+<a href="{{ url_for('scripts_admin') }}" class="btn btn-primary">Voltar para scripts</a>
+<a href="{{ url_for('logs_admin') }}" class="btn btn-secondary">Ver logs</a>
+{% endblock %}
