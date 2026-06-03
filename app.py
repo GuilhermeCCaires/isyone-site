@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from flask import Flask, jsonify, redirect, render_template, request, url_for, flash
+from flask import Flask, Response, jsonify, redirect, render_template, request, url_for, flash
+from markupsafe import escape
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = Path(os.getenv("ISY_DATA_DIR", BASE_DIR / "data"))
@@ -181,6 +182,48 @@ def save_execution_log(script_name: str, params_used: list[str], return_code: in
     conn.close()
 
 
+def try_save_execution_log(script_name: str, params_used: list[str], return_code: int | None, status: str, stdout: str, stderr: str) -> str:
+    try:
+        save_execution_log(script_name, params_used, return_code, status, stdout, stderr)
+    except Exception as exc:
+        return f"Falha ao salvar log de execução: {exc}"
+    return ""
+
+
+def render_execution_result(script: sqlite3.Row, status: str, return_code: int | None, stdout: str, stderr: str):
+    try:
+        return render_template(
+            "resultado.html",
+            script=script,
+            status=status,
+            return_code=return_code,
+            stdout=stdout,
+            stderr=stderr,
+        )
+    except Exception as exc:
+        script_name = script["name"] if script else "desconhecido"
+        body = f"""
+        <!doctype html>
+        <html lang="pt-br">
+        <head><meta charset="utf-8"><title>Resultado da execução</title></head>
+        <body>
+          <h1>Resultado da execução</h1>
+          <p><strong>Script:</strong> {escape(script_name)}</p>
+          <p><strong>Status:</strong> {escape(status)}</p>
+          <p><strong>Código de retorno:</strong> {escape(return_code)}</p>
+          <h2>Saída</h2>
+          <pre>{escape(stdout)}</pre>
+          <h2>Erro</h2>
+          <pre>{escape(stderr)}</pre>
+          <h2>Erro ao renderizar template</h2>
+          <pre>{escape(str(exc))}</pre>
+          <p><a href="/admin/scripts">Voltar para scripts</a></p>
+        </body>
+        </html>
+        """
+        return Response(body, status=200, mimetype="text/html")
+
+
 @app.before_request
 def setup():
     init_db()
@@ -321,6 +364,8 @@ def execute_script_web(script_id: int):
             command,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=60,
             cwd=str(SCRIPTS_DIR),
             check=False,
@@ -328,7 +373,7 @@ def execute_script_web(script_id: int):
 
         status = "sucesso" if completed.returncode == 0 else "falha"
 
-        save_execution_log(
+        log_error = try_save_execution_log(
             script_name=script["name"],
             params_used=[],
             return_code=completed.returncode,
@@ -336,33 +381,37 @@ def execute_script_web(script_id: int):
             stdout=completed.stdout,
             stderr=completed.stderr,
         )
+        stderr = completed.stderr
+        if log_error:
+            stderr = f"{stderr}\n{log_error}".strip()
 
-        return render_template(
-            "resultado.html",
+        return render_execution_result(
             script=script,
             status=status,
             return_code=completed.returncode,
             stdout=completed.stdout,
-            stderr=completed.stderr,
+            stderr=stderr,
         )
 
     except Exception as exc:
-        save_execution_log(
+        stderr = str(exc)
+        log_error = try_save_execution_log(
             script_name=script["name"],
             params_used=[],
             return_code=None,
             status="falha",
             stdout="",
-            stderr=str(exc),
+            stderr=stderr,
         )
+        if log_error:
+            stderr = f"{stderr}\n{log_error}".strip()
 
-        return render_template(
-            "resultado.html",
+        return render_execution_result(
             script=script,
             status="falha",
             return_code=None,
             stdout="",
-            stderr=str(exc),
+            stderr=stderr,
         )
 if __name__ == "__main__":
     init_db()
